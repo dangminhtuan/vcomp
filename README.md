@@ -4,7 +4,7 @@
 VCOMP là một thư viện mã nguồn mở giúp ánh xạ, mã hóa và nén ngữ nghĩa tiếng Việt một cách triệt để. Thay vì nén theo từng byte ngẫu nhiên (như Gzip hay Zip), VCOMP phân tích cấu trúc âm tiết tiếng Việt và mã hóa chúng thành một hệ thống Base60 siêu tối ưu.
 
 ## 🚀 Điểm nhấn (Features)
-- **Lossless Phonetics Compression:** Ép 1 từ tiếng Việt (ví dụ: `nghiêng`) thành đúng 3 ký tự alphanumeric (ví dụ: `5A4`).
+- **Lossless Phonetics Compression:** Ép 1 từ tiếng Việt (ví dụ: `nghiêng`) thành đúng 3 ký tự alphanumeric (ví dụ: `Wgd`).
 - **Giảm 60%-70% Dung lượng:** Cực kỳ hữu ích cho Database, hệ thống Log, chat app, hoặc truyền tải IoT. Gắn VCOMP trước khi chạy GZIP sẽ cho ra dung lượng nhỏ nhất thế giới cho các tin nhắn siêu ngắn.
 - **AI Token Optimization:** Chuẩn hóa toàn bộ độ dài của từ tiếng Việt, dọn đường cho việc ánh xạ 1-1 token, giúp vượt qua rào cản "Thuế Token" (Token Tax) trên các mô hình AI lớn (ChatGPT, Claude).
 
