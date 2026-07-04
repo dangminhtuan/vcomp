@@ -134,16 +134,16 @@ export const ENGLISH_DICT = [
   "cyber", "matrix", "hacker", "system", "online", "code", "secret", "data"
 ];
 
-// === BẢNG MÃ NÉN BASE60 (MNEMONIC ACRONYM) ===
+// === BẢNG MÃ NỀN BASE60 (MNEMONIC ACRONYM) ===
 // 24 giá trị đầu tiên (00-23) sẽ tương ứng với 24 phụ âm gốc của TimeCypher
-// Các giá trị còn lại (24-59) sẽ là các số và chữ còn lại (trừ f, F).
+// Các giá trị còn lại (24-59) sẽ là các số và chữ còn lại (trừ o, O).
 export const BASE60_MAPPING = [
   // 00-23: Mnemonic Consonants
   'c', 'd', 'g', 'G', 'j', 'k', 'K', 'h', 'v', 'D', 'm', 'C', 'r', 's', 'n', 'b', 'l', 'q', 'S', 'z', 'N', 'y', 'L', 'W',
   // 24-33: Numbers (10)
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-  // 34-42: Remaining lowercase without f (9)
-  'a', 'e', 'i', 'o', 'p', 't', 'u', 'w', 'x',
-  // 43-59: Remaining uppercase without F (17)
-  'A', 'B', 'E', 'H', 'I', 'J', 'M', 'O', 'P', 'Q', 'R', 'T', 'U', 'V', 'X', 'Y', 'Z'
+  // 34-42: Remaining lowercase without o (9)
+  'a', 'e', 'f', 'i', 'p', 't', 'u', 'w', 'x',
+  // 43-59: Remaining uppercase without O (17)
+  'A', 'B', 'E', 'F', 'H', 'I', 'J', 'M', 'P', 'Q', 'R', 'T', 'U', 'V', 'X', 'Y', 'Z'
 ];
