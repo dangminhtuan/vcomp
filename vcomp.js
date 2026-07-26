@@ -1,7 +1,7 @@
 import {
   TONES, CONSONANTS_BASE, CONSONANTS_EXTRA,
   RHYMES_BASE, RHYMES_EXTRA_1, RHYMES_EXTRA_2, ENGLISH_DICT, SHORTCUT_WORDS, TWO_DIGIT_WORDS, SHORT_WORDS,
-  BASE60_MAPPING, O_EXCEPTIONS
+  BASE60_MAPPING, O_EXCEPTIONS, REAL_VIETNAMESE_WORDS
 } from './data.js';
 
 // --- PHONETICS ENGINE ---
@@ -18,7 +18,7 @@ export const removeVietnameseTones = (str) => {
   return [clean, tone];
 };
 
-const extractPhonetics = (word) => {
+export const extractPhonetics = (word) => {
   word = word.toLowerCase();
   const [cleanWord, tone] = removeVietnameseTones(word);
   
@@ -47,6 +47,64 @@ const extractPhonetics = (word) => {
     }
   }
   return { consonant, rhyme, tone };
+};
+
+export const splitPhonetics = (word) => {
+  const { consonant, rhyme, tone } = extractPhonetics(word);
+  let vowel = rhyme;
+  let coda = '';
+  
+  const codas = ['ng', 'nh', 'ch', 'c', 'm', 'n', 'p', 't', 'i', 'y', 'o', 'u'];
+  const validVowels = ['a', 'ă', 'â', 'e', 'ê', 'i', 'o', 'ô', 'ơ', 'u', 'ư', 'ia', 'iê', 'ua', 'uô', 'ưa', 'ươ', 'oa', 'oă', 'oe', 'uâ', 'uê', 'uơ', 'uy', 'uya', 'uyê'];
+  
+  for (const c of codas) {
+      if (rhyme.endsWith(c) && rhyme.length > c.length) {
+          const potentialVowel = rhyme.substring(0, rhyme.length - c.length);
+          if (validVowels.includes(potentialVowel)) {
+              vowel = potentialVowel;
+              coda = c;
+              break;
+          }
+      }
+  }
+  
+  return { consonant, vowel, coda, tone };
+};
+
+export const smartCodaFixer = (consonant, newVowel, oldCoda, tone) => {
+    const apply = (v, c) => applyTone(v + c, tone);
+    
+    const mechanicalWord = consonant + apply(newVowel, oldCoda);
+    if (REAL_VIETNAMESE_WORDS.includes(mechanicalWord)) {
+        return mechanicalWord;
+    }
+    
+    const codaSets = [
+        ['ng', 'n', 'nh'],
+        ['c', 't', 'ch'],
+        ['i', 'y'],
+        ['o', 'u']
+    ];
+    
+    let targetSet = null;
+    for (const set of codaSets) {
+        if (set.includes(oldCoda)) {
+            targetSet = set;
+            break;
+        }
+    }
+    
+    if (targetSet) {
+        for (const altCoda of targetSet) {
+            if (altCoda === oldCoda) continue;
+            const altWord = consonant + apply(newVowel, altCoda);
+            if (REAL_VIETNAMESE_WORDS.includes(altWord)) {
+                return altWord;
+            }
+        }
+    }
+    
+    return mechanicalWord;
 };
 
 export const applyTone = (rhyme, tone) => {
