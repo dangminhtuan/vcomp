@@ -125,8 +125,8 @@ export const applyTone = (rhyme, tone) => {
 // --- ENCODER ---
 let shortcutDecodeMap = null;
 
-export const encodeWord = (word, bypassShortcut = false) => {
-  word = word.toLowerCase();
+export const encodeWord = (originalWord, bypassShortcut = false) => {
+  const word = originalWord.toLowerCase();
   
   if (!bypassShortcut) {
     for (const [key, val] of Object.entries(O_EXCEPTIONS)) {
@@ -195,7 +195,24 @@ export const encodeWord = (word, bypassShortcut = false) => {
   }
   
   if (hh === -1 || mm === -1) {
-    return `[${word}]`;
+    let needsBrackets = false;
+    
+    if ((originalWord.length === 2 || originalWord.length === 4 || originalWord.length === 6) && /^\d+$/.test(originalWord)) {
+      needsBrackets = true;
+    }
+    
+    if (originalWord.length >= 1 && originalWord.length <= 3) {
+      let isAllBase60 = true;
+      for (let i = 0; i < originalWord.length; i++) {
+        if (!BASE60_MAPPING.includes(originalWord[i])) {
+          isAllBase60 = false;
+          break;
+        }
+      }
+      if (isAllBase60) needsBrackets = true;
+    }
+    
+    return needsBrackets ? `[${originalWord}]` : originalWord;
   }
   
   const fullCode = `${hh.toString().padStart(2,'0')}${mm.toString().padStart(2,'0')}${s1}${s2}`;
@@ -226,25 +243,34 @@ export const decodeWord = (code) => {
   if (O_EXCEPTIONS[code]) return O_EXCEPTIONS[code];
 
   if (code.length === 2) {
-    const idx = parseInt(code, 10);
-    if (!isNaN(idx) && idx >= 0 && idx < TWO_DIGIT_WORDS.length) {
-      return TWO_DIGIT_WORDS[idx];
+    if (/^\d+$/.test(code)) {
+      const idx = parseInt(code, 10);
+      if (idx >= 0 && idx < TWO_DIGIT_WORDS.length) {
+        return TWO_DIGIT_WORDS[idx];
+      }
+      return '[ERR:2D]';
+    } else {
+      return code;
     }
-    return '[ERR:2D]';
   }
 
   if (code.length === 4) {
     if (shortcutDecodeMap[code]) return shortcutDecodeMap[code];
-    const hh = parseInt(code.substring(0,2), 10);
-    const mm = parseInt(code.substring(2,4), 10);
-    if (hh >= 32 && !isNaN(mm)) {
-      const shortIdx = (hh - 32) * 60 + mm;
-      if (shortIdx >= 0 && shortIdx < SHORT_WORDS.length) return SHORT_WORDS[shortIdx];
+    if (/^\d+$/.test(code)) {
+      const hh = parseInt(code.substring(0,2), 10);
+      const mm = parseInt(code.substring(2,4), 10);
+      if (hh >= 32 && !isNaN(mm)) {
+        const shortIdx = (hh - 32) * 60 + mm;
+        if (shortIdx >= 0 && shortIdx < SHORT_WORDS.length) return SHORT_WORDS[shortIdx];
+      }
+      code = code + '00';
+    } else {
+      return code;
     }
-    code = code + '00';
   }
 
   if (code.length !== 6) return code;
+  if (!/^\d+$/.test(code)) return code;
   const hh = parseInt(code.substring(0,2), 10);
   const mm = parseInt(code.substring(2,4), 10);
   const s1 = parseInt(code.substring(4,5), 10);
@@ -294,6 +320,8 @@ export const decodeWord = (code) => {
 export function timeToBase60(timeStr) {
   if (timeStr.includes('?') || timeStr.startsWith('[')) return timeStr;
   
+  if (!/^\d+$/.test(timeStr)) return timeStr;
+
   if (timeStr.length === 2) {
     const hh = parseInt(timeStr, 10);
     if (!isNaN(hh)) return BASE60_MAPPING[hh];
